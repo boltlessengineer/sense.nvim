@@ -9,9 +9,12 @@
         pname = "sense.nvim";
         src = self;
         neovim = nvim;
+        luaPackages = ps:
+          with ps; [
+            nvim-nio
+          ];
         extraPackages = [
-          wget
-          git
+          go
           gopls
         ];
 

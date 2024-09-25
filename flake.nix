@@ -44,6 +44,8 @@
         devShell = pkgs.mkShell {
           name = "sense.nvim devShell";
           shellHook = ''
+            LUA_PATH="$(luarocks path --lr-path --lua-version 5.1 --local)"
+            LUA_CPATH="$(luarocks path --lr-cpath --lua-version 5.1 --local)"
           '';
           buildInputs = [
             pkgs.sumneko-lua-language-server

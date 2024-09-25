@@ -1,13 +1,28 @@
 ---@module 'luassert'
 
-describe("Test", function ()
+require("spec.minimal_init")
+local nio = require("nio")
+local ui = require("sense.ui")
+
+describe("Test", function()
     it("small test", function()
-        assert.same(2, 1 + 1)
+        assert.same(3, 1 + 2)
     end)
-    it("can I use gopls?", function ()
+    nio.tests.it("goplsssss", function ()
         vim.cmd.edit("spec/example.go")
         local buf = vim.api.nvim_get_current_buf()
-        local clients = vim.lsp.get_clients({ bufnr = buf })
-        assert.same(1, #clients)
+        assert.same("go", vim.bo[buf].filetype)
+        -- HACK: this is clearly not good way to wait until LspAttach event
+        nio.sleep(500)
+        local client = vim.lsp.get_clients({ bufnr = buf })[1]
+        assert.not_nil(client)
+        assert.same("gopls", client.name)
+    end)
+    it("open virtual window", function()
+    end)
+end)
+
+describe("UI", function ()
+    nio.tests.it("open virtual window", function()
     end)
 end)

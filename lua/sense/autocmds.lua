@@ -1,3 +1,4 @@
+-- TODO: lazy-load these
 local state = require("sense.state")
 local ui = require("sense.ui")
 local log = require("sense.log")
@@ -21,6 +22,12 @@ function M.setup()
                     return info.bufnr == ev.buf
                 end)
                 :map(ui.update)
+        end,
+    })
+    vim.api.nvim_create_autocmd({ "VimResized" }, {
+        callback = function()
+            local infos = vim.fn.getwininfo()
+            vim.iter(infos):map(ui.update)
         end,
     })
     -- WinEnter: when user do `:split`

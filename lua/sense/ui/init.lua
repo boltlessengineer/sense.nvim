@@ -24,13 +24,13 @@ end
 function M.update(wininfo)
     virtual.top:render(wininfo)
     virtual.bot:render(wininfo)
-    statuscol.top:render(wininfo)
+    -- statuscol.top:render(wininfo)
 end
 
 function M.close(wininfo)
     virtual.top:close(wininfo)
     virtual.bot:close(wininfo)
-    statuscol.top:close(wininfo)
+    -- statuscol.top:close(wininfo)
 end
 
 return M

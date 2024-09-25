@@ -73,6 +73,7 @@ local function gen_statuscol(name, calc_pos, render_fn)
     }
 end
 
+-- FIXME: don't render anything when textoff is 0
 M.top = gen_statuscol("top_statuscol", function (wininfo, height)
     return {
         relative = "win",

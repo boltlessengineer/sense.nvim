@@ -49,22 +49,6 @@ local function render_bot(wininfo)
     return { line }, { highlight }
 end
 
-local function open_win(win_pos)
-    local win_opts = vim.tbl_deep_extend("force", win_pos, {
-        focusable = false,
-        style = "minimal",
-        zindex = 10,
-    })
-    local buf = vim.api.nvim_create_buf(false, true)
-    local win = vim.api.nvim_open_win(buf, false, win_opts)
-    local winhighlight = table.concat({
-        "NormalNC:Comment",
-    }, ",")
-    vim.api.nvim_set_option_value("winhighlight", winhighlight, { win = win })
-    vim.api.nvim_set_option_value("winblend", 100, { win = win })
-    return win, buf
-end
-
 ---@param calc_pos fun(wininfo: vim.fn.getwininfo.ret.item, width: number, height: number): vim.api.keyset.win_config
 ---@param render_fn fun(wininfo: vim.fn.getwininfo.ret.item): string[], sense.UI.Highlight[]
 ---@return sense.UI.Component
@@ -83,7 +67,7 @@ local function gen_virtual_ui(name, calc_pos, render_fn)
             vim.api.nvim_win_set_config(win, win_pos)
             buf = vim.api.nvim_win_get_buf(win)
         else
-            win, buf = open_win(win_pos)
+            win, buf = ui_utils.open_win_buf(win_pos)
             if win == 0 then
                 return win, buf
             end
@@ -92,7 +76,7 @@ local function gen_virtual_ui(name, calc_pos, render_fn)
         return win, buf
     end
     ---@type sense.UI.Component
-    return {
+    local comp = {
         ---@param wininfo vim.fn.getwininfo.ret.item
         close = function(_self, wininfo)
             local win = vim.w[wininfo.winid][var_name]
@@ -122,26 +106,28 @@ local function gen_virtual_ui(name, calc_pos, render_fn)
             ui_utils.set_lines(buf, lines, highlights, vim.api.nvim_win_get_width(win))
         end,
     }
+    -- register WinClosed event to close window without passing winid
+    return comp
 end
 
-M.top_ui = gen_virtual_ui("top", function(wininfo, width, height)
+M.top = gen_virtual_ui("top", function(wininfo, width, height)
     return {
         relative = "win",
         win = wininfo.winid,
         anchor = "NE",
         row = 0,
-        col = vim.api.nvim_win_get_width(wininfo.winid),
+        col = wininfo.width,
         width = width,
         height = height,
     }
 end, render_top)
-M.bot_ui = gen_virtual_ui("bot", function(wininfo, width, height)
+M.bot = gen_virtual_ui("bot", function(wininfo, width, height)
     return {
         relative = "win",
         win = wininfo.winid,
         anchor = "SE",
-        row = vim.api.nvim_win_get_height(wininfo.winid),
-        col = vim.api.nvim_win_get_width(wininfo.winid),
+        row = wininfo.height,
+        col = wininfo.width,
         width = width,
         height = height,
     }

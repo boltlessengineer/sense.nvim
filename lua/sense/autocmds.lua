@@ -25,6 +25,7 @@ function M.setup()
         end,
     })
     vim.api.nvim_create_autocmd({ "VimResized" }, {
+        group = group,
         callback = function()
             local infos = vim.fn.getwininfo()
             vim.iter(infos):map(ui.update)

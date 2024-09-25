@@ -11,9 +11,12 @@ function M.get_diags_above(wininfo)
             return diag.end_lnum + 1 < wininfo.topline
         end)
         :totable()
+    -- sort in reverse order (closer comes first)
     table.sort(ds, function(a, b)
-        -- sort in reverse order (closer comes first)
-        return a.end_lnum > b.end_lnum
+        if a.lnum == b.lnum then
+            return a.col > b.col
+        end
+        return a.lnum > b.lnum
     end)
     return ds
 end
@@ -26,6 +29,9 @@ function M.get_diags_below(wininfo)
         end)
         :totable()
     table.sort(diagnostics, function(a, b)
+        if a.lnum == b.lnum then
+            return a.col < b.col
+        end
         return a.lnum < b.lnum
     end)
     return diagnostics

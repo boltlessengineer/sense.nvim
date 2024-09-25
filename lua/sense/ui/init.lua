@@ -1,4 +1,5 @@
 local virtual = require("sense.ui.virtual")
+local statuscol = require("sense.ui.statuscol")
 
 local M = {}
 
@@ -21,13 +22,15 @@ end
 
 ---@param wininfo vim.fn.getwininfo.ret.item
 function M.update(wininfo)
-    virtual.top_ui:render(wininfo)
-    virtual.bot_ui:render(wininfo)
+    virtual.top:render(wininfo)
+    virtual.bot:render(wininfo)
+    statuscol.top:render(wininfo)
 end
 
 function M.close(wininfo)
-    virtual.top_ui:close(wininfo)
-    virtual.bot_ui:close(wininfo)
+    virtual.top:close(wininfo)
+    virtual.bot:close(wininfo)
+    statuscol.top:close(wininfo)
 end
 
 return M

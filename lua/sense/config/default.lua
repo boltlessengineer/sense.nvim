@@ -1,20 +1,50 @@
----options used for default renderer
----@class sense.Config.ui.render.Opts
-
----@alias sense.Config.ui.render.Fun fun()
-
----@alias sense.Config.ui.render
----| sense.Config.ui.render.Opts
----| sense.Config.ui.render.Fun
+---@class sense.Opts.Indicator
+---@field enabled? boolean
+---@field level? number
+---@field max_count? number
+---@field win_config? vim.api.keyset.win_config
+---@field render_top? fun(wininfo):string[],table
 
 ---@class sense.Config
 local default_config = {
-    ---@class sense.Config.ui
-    ui = {
-        ---@type sense.Config.ui.render
-        render = {
-        }
-    }
+    ---@type table<string, sense.Opts.Indicator>
+    indicators = {
+        -- general settings
+        ["*"] = {
+            level = vim.diagnostic.severity.WARN,
+            max_count = 1,
+            win_config = {
+                zindex = 10,
+            }
+        },
+        virtualtext = {
+            enabled = false,
+            -- options used from builtin renderer
+            max_count = 1,
+            win_config = {
+                variables = {
+                    winblend = 80,
+                    winhighlight = "",
+                },
+            },
+        },
+        statuscolumn = {
+            enabled = true,
+            render_top = function (wininfo)
+                if vim.wo[wininfo.winid].statuscolumn ~= "" then
+                    return {}, {}
+                end
+                return require("sense.ui.statuscol").render_top(wininfo)
+            end,
+            render_bot = function (wininfo)
+                if vim.wo[wininfo.winid].statuscolumn ~= "" then
+                    return {}, {}
+                end
+                return require("sense.ui.statuscol").render_bot(wininfo)
+            end,
+        },
+    },
+    _log_level = vim.log.levels.WARN,
 }
 
 return default_config

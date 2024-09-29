@@ -8,4 +8,11 @@ function M.align_right(text, width)
     return text, offset
 end
 
+local upper = function(str)
+    return str:gsub("^%l", string.upper)
+end
+function M.severity_to_text(severity)
+    return upper(string.lower(vim.diagnostic.severity[severity]))
+end
+
 return M

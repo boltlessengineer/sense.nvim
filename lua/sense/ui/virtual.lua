@@ -1,5 +1,6 @@
 local helper = require("sense.helper")
 local ui_utils = require("sense.ui.utils")
+local utils = require("sense.utils")
 
 local M = {}
 
@@ -14,12 +15,11 @@ local function render_top(wininfo)
     local cursor_row = vim.api.nvim_win_get_cursor(wininfo.winid)[1]
     local distance = cursor_row - (closest.lnum + 1)
     local line = ("↑ %d lines above"):format(distance)
-    if closest.source then
-        line = line .. " [" .. closest.source .. "]"
-    end
+    line = line .. " [" .. closest.message .. "]"
+    local hl_group = "SenseVirtualText" .. utils.severity_to_text(closest.severity)
     local highlight = {
         line = 0,
-        hl_group = "DiagnosticVirtualTextError",
+        hl_group = hl_group,
         col_start = 0,
         col_end = -1,
     }
@@ -36,13 +36,12 @@ local function render_bot(wininfo)
     local closest = diagnostics[1]
     local cursor_row = vim.api.nvim_win_get_cursor(wininfo.winid)[1]
     local distance = (closest.lnum + 1) - cursor_row
-    local line = ("↓ %d lines below"):format(distance)
-    if closest.source then
-        line = line .. " [" .. closest.source .. "]"
-    end
+    local line = ("↑ %d lines above"):format(distance)
+    line = line .. " [" .. closest.message .. "]"
+    local hl_group = "SenseVirtualText" .. utils.severity_to_text(closest.severity)
     local highlight = {
         line = 0,
-        hl_group = "DiagnosticVirtualTextError",
+        hl_group = hl_group,
         col_start = 0,
         col_end = -1,
     }
@@ -54,27 +53,6 @@ end
 ---@return sense.UI.Component
 local function gen_virtual_ui(name, calc_pos, render_fn)
     local var_name = "__sense_nvim_" .. name
-    ---@param wininfo vim.fn.getwininfo.ret.item
-    ---@param width number
-    ---@param height number
-    ---@return number win
-    ---@return number buf
-    local function open(wininfo, width, height)
-        local win = vim.w[wininfo.winid][var_name]
-        local win_pos = calc_pos(wininfo, width, height)
-        local buf
-        if win and vim.api.nvim_win_is_valid(win) then
-            vim.api.nvim_win_set_config(win, win_pos)
-            buf = vim.api.nvim_win_get_buf(win)
-        else
-            win, buf = ui_utils.open_win_buf(win_pos)
-            if win == 0 then
-                return win, buf
-            end
-            vim.w[wininfo.winid][var_name] = win
-        end
-        return win, buf
-    end
     ---@type sense.UI.Component
     local comp = {
         ---@param wininfo vim.fn.getwininfo.ret.item
@@ -101,7 +79,22 @@ local function gen_virtual_ui(name, calc_pos, render_fn)
                     line = line:sub(1, width / 2)
                 end
             end)
-            local win, buf = open(wininfo, width, #lines)
+            local win, buf = (function ()
+                local win = vim.w[wininfo.winid][var_name]
+                local win_pos = calc_pos(wininfo, width, #lines)
+                local buf
+                if win and vim.api.nvim_win_is_valid(win) then
+                    vim.api.nvim_win_set_config(win, win_pos)
+                    buf = vim.api.nvim_win_get_buf(win)
+                else
+                    win, buf = ui_utils.open_win_buf(win_pos)
+                    if win == 0 then
+                        return win, buf
+                    end
+                    vim.w[wininfo.winid][var_name] = win
+                end
+                return win, buf
+            end)()
 
             ui_utils.set_lines(buf, lines, highlights, vim.api.nvim_win_get_width(win))
         end,
@@ -132,5 +125,15 @@ M.bot = gen_virtual_ui("bot", function(wininfo, width, height)
         height = height,
     }
 end, render_bot)
+
+function M.update(wininfo)
+    M.top:render(wininfo)
+    M.bot:render(wininfo)
+end
+
+function M.clear(wininfo)
+    M.top:close(wininfo)
+    M.bot:close(wininfo)
+end
 
 return M

@@ -1,32 +1,56 @@
 local helper = require("sense.helper")
+local log = require("sense.log")
 local ui_utils = require("sense.ui.utils")
 local utils = require("sense.utils")
 
 local M = {}
+
+---@param prefix string
+---@param diagnostics vim.Diagnostic[]
+---@return fun(wininfo: vim.fn.getwininfo.ret.item): string[], sense.UI.Highlight[]
+local function gen_render(prefix, diagnostics)
+    return function (wininfo)
+        local closest = diagnostics[1]
+        local cursor_row = vim.api.nvim_win_get_cursor(wininfo.winid)[1]
+        local distance = cursor_row - (closest.lnum + 1)
+        local distance_str = utils.align_right(tostring(distance), wininfo.textoff - vim.fn.strdisplaywidth(prefix) - 1)
+        local line = prefix .. distance_str .. " "
+        -- if vim.fn.strdisplaywidth(line) > wininfo.textoff then
+        --     line = line:sub(1, wininfo.textoff - 1) .. "+"
+        -- end
+        local hl_group = "SenseStatusCol" .. utils.severity_to_text(closest.severity)
+        local highlight = {
+            line = 0,
+            hl_group = hl_group,
+            col_start = 0,
+            col_end = -1,
+        }
+        return { line }, { highlight }
+    end
+end
 
 ---@param wininfo vim.fn.getwininfo.ret.item
 ---@return string[], sense.UI.Highlight[]
 local function render_top(wininfo)
     local diagnostics = helper.get_diags_above(wininfo)
     if #diagnostics == 0 then
+        log.debug("no idagnostics, return empty lines")
         return {}, {}
     end
-    local closest = diagnostics[1]
-    local cursor_row = vim.api.nvim_win_get_cursor(wininfo.winid)[1]
     local prefix = "↑ "
-    local distance = cursor_row - (closest.lnum + 1)
-    local distance_str = utils.align_right(tostring(distance), wininfo.textoff - vim.fn.strdisplaywidth(prefix) - 1)
-    local line = prefix .. distance_str .. " "
-    if vim.fn.strdisplaywidth(line) > wininfo.textoff then
-        line = line:sub(1, wininfo.textoff - 1) .. "+"
+    return gen_render(prefix, diagnostics)(wininfo)
+end
+
+---@param wininfo vim.fn.getwininfo.ret.item
+---@return string[], sense.UI.Highlight[]
+local function render_bot(wininfo)
+    local diagnostics = helper.get_diags_below(wininfo)
+    if #diagnostics == 0 then
+        log.debug("no idagnostics, return empty lines")
+        return {}, {}
     end
-    local highlight = {
-        line = 0,
-        hl_group = "DiagnosticVirtualTextError",
-        col_start = 0,
-        col_end = -1,
-    }
-    return { line }, { highlight }
+    local prefix = "↓ "
+    return gen_render(prefix, diagnostics)(wininfo)
 end
 
 ---@param calc_pos fun(wininfo: vim.fn.getwininfo.ret.item, height: number): vim.api.keyset.win_config
@@ -61,7 +85,9 @@ local function gen_statuscol(name, calc_pos, render_fn)
         end,
         ---@param wininfo vim.fn.getwininfo.ret.item
         render = function(self, wininfo)
+            log.debug("virtual:render")
             local lines, highlights = render_fn(wininfo)
+            log.debug(lines)
             if #lines == 0 then
                 self:close(wininfo)
                 return
@@ -85,5 +111,16 @@ M.top = gen_statuscol("top_statuscol", function (wininfo, height)
         height = height,
     }
 end, render_top)
+M.bot = gen_statuscol("bot_statuscol", function (wininfo, height)
+    return {
+        relative = "win",
+        win = wininfo.winid,
+        anchor = "SW",
+        row = wininfo.height,
+        col = 0,
+        width = wininfo.textoff,
+        height = height,
+    }
+end, render_bot)
 
 return M

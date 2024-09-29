@@ -43,7 +43,9 @@ end
 ---@param config vim.api.keyset.win_config
 ---@return integer
 function M.nvim_open_win(buffer, enter, config)
+    log.debug("uiutils.nvim_open_win")
     local win = vim.api.nvim_open_win(buffer, enter, config)
+    log.debug("nvim_open_win")
     if config.relative == "win" then
         -- HACK: close windows when parent window is closed
         -- WHY IS THIS NOT A DEFAULT BEHAVIOR
@@ -78,6 +80,7 @@ function M.open_win_buf(win_config)
         "NormalNC:LineNr",
     }, ",")
     vim.api.nvim_set_option_value("winhighlight", winhighlight, { win = win })
+    log.debug("window opened")
     return win, buf
 end
 

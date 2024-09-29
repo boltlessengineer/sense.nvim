@@ -7,8 +7,6 @@ vim.cmd("runtime! ftdetect/*.{vim,lua}")
 vim.cmd("runtime! filetype.lua")
 vim.cmd("runtime! plugin/**/*.{vim,lua}")
 
-vim.notify("minimal_init")
-
 local M = {}
 
 function M.init_lsp()

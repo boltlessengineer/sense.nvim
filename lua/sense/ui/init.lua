@@ -1,7 +1,20 @@
-local virtual = require("sense.ui.virtual")
+local config = require("sense.config")
+local log = require("sense.log")
 local statuscol = require("sense.ui.statuscol")
+local virtual = require("sense.ui.virtual")
 
-local M = {}
+local M = {
+    components = {}
+}
+
+if config.indicators.virtualtext.enabled then
+    table.insert(M.components, virtual.top)
+    table.insert(M.components, virtual.bot)
+end
+if config.indicators.statuscolumn.enabled then
+    table.insert(M.components, statuscol.top)
+    table.insert(M.components, statuscol.bot)
+end
 
 ---@class sense.UI.Highlight
 ---@field hl_group string
@@ -22,15 +35,16 @@ end
 
 ---@param wininfo vim.fn.getwininfo.ret.item
 function M.update(wininfo)
-    virtual.top:render(wininfo)
-    virtual.bot:render(wininfo)
-    -- statuscol.top:render(wininfo)
+    log.debug("ui.update")
+    vim.iter(M.components):map(function (c)
+        c:render(wininfo)
+    end)
 end
 
 function M.close(wininfo)
-    virtual.top:close(wininfo)
-    virtual.bot:close(wininfo)
-    -- statuscol.top:close(wininfo)
+    vim.iter(M.components):map(function (c)
+        c:close(wininfo)
+    end)
 end
 
 return M

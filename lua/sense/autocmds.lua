@@ -23,7 +23,6 @@ function M.setup()
                     return info.bufnr == ev.buf
                 end)
                 :map(ui().update)
-            vim.g.fucking_schedule = true
         end,
     })
     -- PERF: don't *update* on VimResized/WinScrolled
@@ -33,7 +32,6 @@ function M.setup()
         callback = function()
             local infos = vim.fn.getwininfo()
             vim.iter(infos):map(ui().update)
-                    vim.g.fucking_schedule = true
         end,
     })
     -- WinEnter: when user do `:split`
@@ -51,7 +49,6 @@ function M.setup()
             if vim.api.nvim_win_is_valid(winid) then
                 local info = vim.fn.getwininfo(winid)[1]
                 ui().update(info)
-                vim.g.fucking_schedule = true
             end
         end
     })
@@ -73,18 +70,8 @@ function M.setup()
             -- HACK: to avoid statuscolumn not calculated
             -- see https://github.com/neovim/neovim/issues/30547
             vim.cmd.redraw()
-            vim.schedule(function ()
-                ---@cast winid number
-                log().debug("winid:"..winid..tostring(vim.api.nvim_win_is_valid(winid)))
-                if vim.api.nvim_win_is_valid(winid) then
-                    local info = vim.fn.getwininfo(winid)[1]
-                    log().debug("win textoff: " .. info.textoff)
-                    ui().update(info)
-                    vim.g.fucking_schedule = true
-                end
-            end)
-            -- local info = vim.fn.getwininfo(winid)[1]
-            -- ui().update(info)
+            local info = vim.fn.getwininfo(winid)[1]
+            ui().update(info)
         end,
     })
 end

@@ -3,7 +3,8 @@
 ---@field level? number
 ---@field max_count? number
 ---@field win_config? vim.api.keyset.win_config
----@field render_top? fun(wininfo):string[],table
+---@field render_top? fun(wininfo: vim.fn.getwininfo.ret.item): string[], sense.UI.Highlight[]
+---@field render_bot? fun(wininfo: vim.fn.getwininfo.ret.item): string[], sense.UI.Highlight[]
 
 ---@class sense.Config
 local default_config = {
@@ -18,7 +19,7 @@ local default_config = {
             }
         },
         virtualtext = {
-            enabled = false,
+            enabled = true,
             -- options used from builtin renderer
             max_count = 1,
             win_config = {

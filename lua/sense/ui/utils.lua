@@ -47,10 +47,13 @@ function M.nvim_open_win(buffer, enter, config)
     local win = vim.api.nvim_open_win(buffer, enter, config)
     log.debug("nvim_open_win")
     if config.relative == "win" then
+        if config.win == 0 then
+            config.win = vim.api.nvim_get_current_win()
+        end
         -- HACK: close windows when parent window is closed
         -- WHY IS THIS NOT A DEFAULT BEHAVIOR
         vim.api.nvim_create_autocmd("WinClosed", {
-            group = vim.api.nvim_create_augroup("sense.fix_nvim_win_open", { clear = false }),
+            group = vim.api.nvim_create_augroup("sense.fix_nvim_open_win", { clear = false }),
             callback = function (ev)
                 if ev.match == tostring(config.win) then
                     if vim.api.nvim_win_is_valid(win) then

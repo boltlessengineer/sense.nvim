@@ -1,7 +1,7 @@
 local config = require("sense.config")
 local helper = require("sense.helper")
 local log = require("sense.log")
-local ui_utils = require("sense.ui.utils")
+local uiutils = require("sense.utils.uiutils")
 local utils = require("sense.utils")
 
 local M = {}
@@ -94,7 +94,7 @@ local function gen_virtual_ui(name, calc_pos, render_fn)
                     vim.api.nvim_win_set_config(win, win_pos)
                     buf = vim.api.nvim_win_get_buf(win)
                 else
-                    win, buf = ui_utils.open_win_buf(win_pos)
+                    win, buf = uiutils.open_win_buf(win_pos)
                     if win == 0 then
                         return win, buf
                     end
@@ -103,10 +103,9 @@ local function gen_virtual_ui(name, calc_pos, render_fn)
                 return win, buf
             end)()
 
-            ui_utils.set_lines(buf, lines, highlights, vim.api.nvim_win_get_width(win))
+            uiutils.set_lines(buf, lines, highlights, vim.api.nvim_win_get_width(win))
         end,
     }
-    -- TODO: register WinClosed event to close window without passing winid
     return comp
 end
 

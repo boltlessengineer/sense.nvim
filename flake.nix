@@ -40,20 +40,6 @@
             test-overlay
           ];
         };
-
-        devShell = pkgs.mkShell {
-          name = "sense.nvim devShell";
-          shellHook = ''
-            export LUA_PATH="$(luarocks path --lr-path --lua-version 5.1 --local)"
-            export LUA_CPATH="$(luarocks path --lr-cpath --lua-version 5.1 --local)"
-          '';
-          buildInputs = [
-            pkgs.sumneko-lua-language-server
-            pkgs.stylua
-            pkgs.docgen
-            (pkgs.lua5_1.withPackages (ps: with ps; [luarocks luacheck]))
-          ];
-        };
       in {
         packages = {
           default = self.packages.${system}.luarocks-51;
@@ -72,9 +58,18 @@
         #     ;
         # };
 
-        devShells = {
-          default = devShell;
-          inherit devShell;
+        devShells.default = pkgs.mkShell {
+          name = "sense.nvim devShell";
+          shellHook = ''
+            export LUA_PATH="$(luarocks path --lr-path --lua-version 5.1 --local)"
+            export LUA_CPATH="$(luarocks path --lr-cpath --lua-version 5.1 --local)"
+          '';
+          buildInputs = [
+            pkgs.sumneko-lua-language-server
+            pkgs.stylua
+            pkgs.docgen
+            (pkgs.lua5_1.withPackages (ps: with ps; [luarocks luacheck]))
+          ];
         };
 
         checks = {

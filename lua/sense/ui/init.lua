@@ -23,6 +23,7 @@ end
 ---@param wininfo vim.fn.getwininfo.ret.item
 function M.update(wininfo)
     log.debug("ui.update")
+    log.debug("wininfo:", wininfo)
     vim.iter(M.indicators):map(function (c)
         log.debug("rendering", c.name)
         c:render(wininfo)

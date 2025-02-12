@@ -9,15 +9,29 @@ local M = {}
 function M.setup()
     local group = vim.api.nvim_create_augroup("sense-nvim", { clear = true })
 
+    -- HACK: This is needed to handle `:tabnew` case
+    -- Because WinEnter on `:tabnew` doesn't update the current buffer.
+    -- TODO: maybe make sequential autocmd for `TabNew->BufEnter` event later
+    vim.api.nvim_create_autocmd("BufEnter", {
+        group = group,
+        callback = function(ev)
+            local winid = vim.api.nvim_get_current_win()
+            log().debug("Event:", ev.event, "Buf:", ev.buf, "Match:", ev.match, "winid:", winid)
+            local info = vim.fn.getwininfo(winid)[1]
+            ui().update(info)
+        end,
+    })
     vim.api.nvim_create_autocmd("DiagnosticChanged", {
         group = group,
         callback = function(ev)
-            log().debug("Event:".. ev.event.. "Buf:".. ev.buf.. "Match:".. ev.match)
+            log().debug("Event:", ev.event, "Buf:", ev.buf, "Match:", ev.match)
             local diagnostics = ev.data.diagnostics
+            log().debug("diagnostics:", diagnostics)
             -- cache the diagnostics to be used from WinScrolled event
             state().diag_cache[ev.buf] = diagnostics
             -- update all windows with that buffer
             local infos = vim.fn.getwininfo()
+            log().debug(infos)
             vim.iter(infos)
                 :filter(function(info)
                     return info.bufnr == ev.buf
@@ -39,13 +53,13 @@ function M.setup()
     vim.api.nvim_create_autocmd("WinScrolled", {
         group = group,
         callback = function (ev)
-            log().debug("Event:".. ev.event.. "Buf:".. ev.buf.. "Match:".. ev.match, "")
-            if not state().diag_cache[ev.buf] then
-                log().debug("buffer", ev.buf, "haven't been cached yet. aborting UI updates")
+            log().debug("Event:", ev.event, "Buf:", ev.buf, "Match:", ev.match)
+            if not state().is_buf_tracked(ev.buf) then
+                log().debug("buffer", ev.buf, "is not tracked yet. aborting UI updates")
                 return
             end
             local winid = tonumber(ev.match)
-            ---@cast winid number
+            assert(type(winid) == "number")
             if vim.api.nvim_win_is_valid(winid) then
                 local info = vim.fn.getwininfo(winid)[1]
                 ui().update(info)
@@ -55,17 +69,13 @@ function M.setup()
     vim.api.nvim_create_autocmd({ "WinEnter", "CursorMoved" }, {
         group = group,
         callback = function(ev)
-            log().debug("Event:".. ev.event.. "Buf:".. ev.buf.. "Match:".. ev.match, "")
+            local winid = vim.api.nvim_get_current_win()
+            log().debug("Event:", ev.event, "Buf:", ev.buf, "Match:", ev.match, "winid:", winid)
+            log().debug("buffer in new window:", vim.api.nvim_win_get_buf(winid))
             -- Ignore buffers that haven't been cached yet
             if not state().diag_cache[ev.buf] then
                 log().debug("buffer", ev.buf, "haven't been cached yet. aborting UI updates")
                 return
-            end
-            local winid
-            if ev.event == "WinScrolled" then
-                winid = tonumber(ev.match)
-            else
-                winid = vim.api.nvim_get_current_win()
             end
             -- HACK: to avoid statuscolumn not calculated
             -- see https://github.com/neovim/neovim/issues/30547

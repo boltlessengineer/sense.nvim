@@ -73,7 +73,7 @@ local function gen_statuscol_ui(name, calc_pos, render_fn)
         render = function(self, wininfo)
             log.debug("statuscolumn:render")
             local lines, highlights = render_fn(wininfo)
-            log.debug(lines)
+            log.debug("lines", lines)
             if #lines == 0 then
                 self:close(wininfo)
                 return

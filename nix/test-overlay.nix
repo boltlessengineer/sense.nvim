@@ -36,6 +36,7 @@
     '';
   };
 in {
+  # test with neovim v0.10.2 instead
   integration-stable = mkNeorocksTest "integration-stable" final.neovim;
   integration-nightly = mkNeorocksTest "integration-nightly" final.neovim-nightly;
   inherit docgen;

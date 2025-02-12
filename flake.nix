@@ -80,7 +80,7 @@
         checks = {
           inherit
             (pkgs)
-            # integration-stable
+            integration-stable
             integration-nightly
             ;
         };

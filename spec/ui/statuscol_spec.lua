@@ -37,6 +37,20 @@ local diags = {
     },
 }
 
+---@param path string filepath to open
+---Open buffer and set content same as given path.
+---
+---This function is needed because `getwininfo()` has some weird behaviors when testing in nix
+---sanxbox environment. It sometimes return `botline=0` while `topline=1`.
+---There isn't any issue when tested locally (outside of nix build environment) but to be safe,
+---we have this `open_file` function to simulate opening file in testing environment.
+local function open_file(path)
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
+    for l in io.lines(path) do
+        vim.api.nvim_buf_set_lines(0, -1, -1, false, { l })
+    end
+end
+
 describe("UI component - statuscol", function()
     local function count_visible_win()
         return #vim.api.nvim_tabpage_list_wins(0)
@@ -69,7 +83,7 @@ describe("UI component - statuscol", function()
     end)
     it("vsplit windows should have same state", function()
         -- open new buffer and set diagnostics
-        vim.cmd.edit("spec/example.go")
+        open_file("spec/example.go")
         vim.diagnostic.set(test_ns, 0, diags)
         assert.same(1, count_visible_win())
 
@@ -89,7 +103,7 @@ describe("UI component - statuscol", function()
     end)
     it("tabnew should hide all floating windows", function()
         -- open new buffer and set diagnostics
-        vim.cmd.edit("spec/example.go")
+        open_file("spec/example.go")
         vim.diagnostic.set(test_ns, 0, diags)
         assert.same(1, count_visible_win())
 

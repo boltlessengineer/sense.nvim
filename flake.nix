@@ -15,6 +15,9 @@
     flake-parts,
     ...
   }: let
+    plugin-overlay = import ./nix/plugin-overlay.nix {
+      inherit self;
+    };
     test-overlay = import ./nix/test-overlay.nix {
       inherit self inputs;
     };
@@ -37,6 +40,7 @@
           inherit system;
           overlays = [
             neorocks.overlays.default
+            plugin-overlay
             test-overlay
           ];
         };
@@ -68,6 +72,7 @@
             pkgs.sumneko-lua-language-server
             pkgs.stylua
             pkgs.docgen
+            pkgs.neovim-nightly
             (pkgs.lua5_1.withPackages (ps: with ps; [luarocks luacheck]))
           ];
         };

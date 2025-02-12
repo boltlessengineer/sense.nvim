@@ -21,6 +21,7 @@
         preCheck = ''
           # Neovim expects to be able to create log files, etc.
           export HOME=$(realpath .)
+          export SENSE_NVIM_PLUGIN_DIR=${final.sense-nvim-dev}
         '';
       };
   docgen = final.writeShellApplication {

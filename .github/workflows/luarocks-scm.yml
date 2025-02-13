@@ -17,6 +17,7 @@ jobs:
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
         with:
+          license: GPLv3
           version: scm
           summary: Show diagnostics that are not visible in current view
           # detailed_description: |

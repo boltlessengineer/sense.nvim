@@ -1,0 +1,28 @@
+name: Luarocks Upload
+
+on:
+  push:
+    tags:
+      - "*"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  luarocks-upload:
+    runs-on: ubuntu-latest
+    name: Luarocks upload
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: LuaRocks Upload
+        uses: nvim-neorocks/luarocks-tag-release@v7
+        env:
+          LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
+        with:
+          summary: Show diagnostics that are not visible in current view
+          # detailed_description: |
+          #   Show diagnostics that are not visible in current view
+          test_dependencies: |
+            nlua
+          copy_directories: |
+            {{ neovim.plugin.dirs }}

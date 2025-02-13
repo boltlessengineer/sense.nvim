@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
 
-# jobs:
+jobs:
 #   test:
 #     runs-on: ubuntu-latest
 #     steps:

@@ -1,0 +1,26 @@
+name: Luarocks Upload (SCM)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  luarocks-upload-scm:
+    runs-on: ubuntu-latest
+    name: Luarocks upload (SCM)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: LuaRocks Upload
+        uses: nvim-neorocks/luarocks-tag-release@v7
+        env:
+          LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
+        with:
+          version: scm
+          summary: Show diagnostics that are not visible in current view
+          # detailed_description: |
+          test_dependencies: |
+            nlua
+          copy_directories: |
+            {{ neovim.plugin.dirs }}

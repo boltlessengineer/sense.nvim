@@ -1,6 +1,7 @@
 ---@module 'luassert'
 
 require("spec.minimal_init")
+local testutils = require("spec.testutils")
 
 vim.g.sense_nvim = {
     indicators = {
@@ -13,32 +14,7 @@ vim.g.sense_nvim = {
     }
 }
 
-local ui = require("sense.ui")
-
----@diagnostic disable-next-line: duplicate-set-field
--- require("sense.log").debug = function (...)
---     vim.print(...)
--- end
-
--- describe("Test", function()
---     it("small test", function()
---         assert.same(3, 1 + 2)
---     end)
---     nio.tests.it("goplsssss", function ()
---         vim.cmd.edit("spec/example.go")
---         local buf = vim.api.nvim_get_current_buf()
---         assert.same("go", vim.bo[buf].filetype)
---         -- HACK: this is clearly not good way to wait until LspAttach event
---         nio.sleep(500)
---         local client = vim.lsp.get_clients({ bufnr = buf })[1]
---         assert.not_nil(client)
---         assert.same("gopls", client.name)
---     end)
---     it("open virtual window", function()
---     end)
--- end)
-
-local test_ns = vim.api.nvim_create_namespace("sense.test")
+local TEST_NS = vim.api.nvim_create_namespace("sense.test")
 local diags = {
     {
         code = "UndeclaredName",
@@ -59,41 +35,34 @@ local diags = {
         },
     },
 }
+
 describe("UI component - virtual", function()
-    local function count_win()
-        return #vim.api.nvim_list_wins()
-    end
+    -- setup options to test with
+    vim.o.number = true
+    vim.o.relativenumber = true
+    vim.o.signcolumn = "yes"
+    vim.o.splitright = true
     before_each(function ()
-        -- setup options to test with
-        vim.o.number = true
-        vim.o.relativenumber = true
-        vim.o.signcolumn = "yes"
         -- clear all buffers/windows
         vim.cmd("silent! %bwipeout")
         vim.cmd("silent! wincmd o")
+
+        -- open new buffer and set diagnostics
+        testutils.open_file("spec/example.go")
+        vim.diagnostic.set(TEST_NS, 0, diags)
     end)
     it("assert vim window size", function()
         assert.same(vim.o.columns, 80)
         assert.same(vim.o.lines, 24)
-        assert.same(true, require("sense.config").indicators.virtualtext.enabled)
-        assert.same(false, require("sense.config").indicators.statuscolumn.enabled)
     end)
-    -- it("open virtual window", function()
-    --     vim.cmd.edit("spec/example.go")
-    --     assert.same(1, count_win())
-    --     vim.diagnostic.set(test_ns, 0, diags)
-    --     -- split window vertically
-    --     vim.cmd.wincmd("v")
-    --     assert.same(2, count_win())
-    --
-    --     -- go to bottom to show virtual UI pointing top
-    --     vim.cmd.normal("G")
-    --     ui.update(vim.fn.getwininfo()[1])
-    --     assert.same(3, count_win())
-    --
-    --     -- close the new split window
-    --     vim.cmd.wincmd("q")
-    --     -- window count should be 1 here
-    --     assert.same(1, count_win())
-    -- end)
+    it("visible on scroll", function()
+        assert.same(1, #testutils.list_visible_wins())
+
+        -- go to bottom to show virtual UI pointing top
+        vim.cmd.normal("G")
+        testutils.emulate_missing_events("WinScrolled", {
+            match = vim.api.nvim_get_current_win(),
+        })
+        assert.same(2, #testutils.list_visible_wins())
+    end)
 end)

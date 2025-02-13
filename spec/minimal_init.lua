@@ -1,7 +1,4 @@
-local test_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h")
-local sense_nvim_dir = vim.fn.fnamemodify(test_dir, ":h")
-
-vim.opt.runtimepath:append(sense_nvim_dir)
+vim.opt.runtimepath:append(assert(vim.env.SENSE_NVIM_PLUGIN_DIR))
 vim.cmd("runtime! ftplugin.vim")
 vim.cmd("runtime! ftdetect/*.{vim,lua}")
 vim.cmd("runtime! filetype.lua")

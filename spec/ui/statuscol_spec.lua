@@ -1,6 +1,7 @@
 ---@module 'luassert'
 
 require("spec.minimal_init")
+local testutils = require("spec.testutils")
 
 vim.g.sense_nvim = {
     indicators = {
@@ -13,9 +14,7 @@ vim.g.sense_nvim = {
     },
 }
 
-local ui = require("sense.ui")
-
-local test_ns = vim.api.nvim_create_namespace("sense.test")
+local TEST_NS = vim.api.nvim_create_namespace("sense.test")
 local diags = {
     {
         code = "UndeclaredName",
@@ -37,31 +36,7 @@ local diags = {
     },
 }
 
----@param path string filepath to open
----Open buffer and set content same as given path.
----
----This function is needed because `getwininfo()` has some weird behaviors when testing in nix
----sanxbox environment. It sometimes return `botline=0` while `topline=1`.
----There isn't any issue when tested locally (outside of nix build environment) but to be safe,
----we have this `open_file` function to simulate opening file in testing environment.
-local function open_file(path)
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
-    for l in io.lines(path) do
-        vim.api.nvim_buf_set_lines(0, -1, -1, false, { l })
-    end
-end
-
 describe("UI component - statuscol", function()
-    local function count_visible_win()
-        return #vim.api.nvim_tabpage_list_wins(0)
-    end
-    local function win_is_float(win)
-        local c = vim.api.nvim_win_get_config(win)
-        return c.relative ~= ""
-    end
-    local function ui_update_all()
-        vim.iter(vim.fn.getwininfo()):map(ui.update)
-    end
     -- setup options to test with
     vim.o.number = true
     vim.o.relativenumber = true
@@ -71,52 +46,75 @@ describe("UI component - statuscol", function()
         -- clear all buffers/windows
         vim.cmd("silent! %bwipeout")
         vim.cmd("silent! wincmd o")
+
+        -- open new buffer and set diagnostics
+        testutils.open_file("spec/example.go")
+        vim.diagnostic.set(TEST_NS, 0, diags)
     end)
     it("assert vim window size", function()
         assert.same(vim.o.columns, 80)
         assert.same(vim.o.lines, 24)
-        assert.same(vim.o.number, true)
-        assert.same(vim.o.relativenumber, true)
-        assert.same(vim.o.signcolumn, "yes")
-        assert.same(true, require("sense.config").indicators.statuscolumn.enabled)
-        assert.same(false, require("sense.config").indicators.virtualtext.enabled)
     end)
-    it("vsplit windows should have same state", function()
-        -- open new buffer and set diagnostics
-        open_file("spec/example.go")
-        vim.diagnostic.set(test_ns, 0, diags)
-        assert.same(1, count_visible_win())
+    it("visible on scroll", function()
+        assert.same(1, #testutils.list_visible_wins())
+
+        -- go to bottom to show virtual UI pointing top
+        vim.cmd.normal("G")
+        testutils.emulate_missing_events("WinScrolled", {
+            match = vim.api.nvim_get_current_win(),
+        })
+        assert.same(2, #testutils.list_visible_wins())
+    end)
+    it("split windows should work separately", function()
+        assert.same(1, #testutils.list_visible_wins())
+
+        -- split window vertically
+        vim.cmd.wincmd("v")
+        assert.same(2, #testutils.list_visible_wins())
+
+        -- go to bottom to show virtual UI pointing top on new window
+        vim.cmd.normal("G")
+        testutils.emulate_missing_events("WinScrolled", {
+            match = vim.api.nvim_get_current_win(),
+        })
+        assert.same(3, #testutils.list_visible_wins())
+
+        -- close the new split window
+        vim.cmd.wincmd("q")
+        assert.same(1, #testutils.list_visible_wins())
+    end)
+    it("windows should have same state on vsplit", function()
+        assert.same(1, #testutils.list_visible_wins())
 
         -- scroll to bottom (to reveal top-indicators)
         vim.cmd.normal("G")
-        ui_update_all()
-        assert.same(2, count_visible_win())
+        testutils.emulate_missing_events("WinScrolled", {
+            match = vim.api.nvim_get_current_win(),
+        })
+        assert.same(2, #testutils.list_visible_wins())
 
         -- vertically split window
         vim.cmd.wincmd("v")
-        ui_update_all()
-        assert.same(4, count_visible_win())
-        local fwins = vim.iter(vim.api.nvim_tabpage_list_wins(0)):filter(win_is_float):totable()
+        local fwins = testutils.list_visible_float_wins()
         assert.same(2, #fwins)
         assert.same(6, vim.api.nvim_win_get_width(fwins[1]))
         assert.same(6, vim.api.nvim_win_get_width(fwins[2]))
+        assert.same(4, #testutils.list_visible_wins())
     end)
     it("tabnew should hide all floating windows", function()
-        -- open new buffer and set diagnostics
-        open_file("spec/example.go")
-        vim.diagnostic.set(test_ns, 0, diags)
-        assert.same(1, count_visible_win())
+        assert.same(1, #testutils.list_visible_wins())
 
         -- scroll to bottom (to reveal top-indicators)
         vim.cmd.normal("G")
-        ui_update_all()
-        assert.same(2, count_visible_win())
+        testutils.emulate_missing_events("WinScrolled", {
+            match = vim.api.nvim_get_current_win(),
+        })
+        assert.same(2, #testutils.list_visible_wins())
 
         -- open new tab
         vim.cmd.tabnew()
-        -- ui_update_all()
-        local fwins = vim.iter(vim.api.nvim_tabpage_list_wins(0)):filter(win_is_float):totable()
+        local fwins = testutils.list_visible_float_wins()
         assert.same(0, #fwins)
-        assert.same(1, count_visible_win())
+        assert.same(1, #testutils.list_visible_wins())
     end)
 end)

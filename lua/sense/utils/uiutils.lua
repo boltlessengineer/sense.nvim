@@ -15,7 +15,6 @@ function M.set_lines(buf, lines, highlights, width)
     if width then
         -- Right justify each line by padding spaces
         for l, line in ipairs(lines) do
-            -- FIXME: handle when offset is negative (line is longer than width)
             local text, offset = utils.align_right(line, width)
             lines[l] = text
             offsets[l] = offset

@@ -45,23 +45,15 @@
           ];
         };
       in {
-        packages = {
-          default = self.packages.${system}.luarocks-51;
-          luarocks-51 = pkgs.lua51Packages.luarocks;
+        packages = rec {
+          default = nvim-plugin;
+          nvim-plugin = pkgs.sense-nvim-dev;
           inherit
             (pkgs)
             docgen
             neovim-test-drive
             ;
         };
-        # packages = rec {
-        #   default = sense-nvim;
-        #   inherit (pkgs.luajitPackages) sense-nvim;
-        #   inherit
-        #     (pkgs)
-        #     docgen
-        #     ;
-        # };
 
         devShells.default = pkgs.mkShell {
           name = "sense.nvim devShell";
@@ -69,11 +61,11 @@
             export LUA_PATH="$(luarocks path --lr-path --lua-version 5.1 --local)"
             export LUA_CPATH="$(luarocks path --lr-cpath --lua-version 5.1 --local)"
           '';
-          buildInputs = [
-            pkgs.sumneko-lua-language-server
-            pkgs.stylua
-            pkgs.docgen
-            pkgs.neovim-nightly
+          buildInputs = with pkgs; [
+            sumneko-lua-language-server
+            stylua
+            docgen
+            neovim-nightly
             (pkgs.lua5_1.withPackages (ps: with ps; [luarocks luacheck]))
           ];
         };

@@ -1,8 +1,7 @@
 name: Luarocks Upload (SCM)
 
 on:
-  push:
-  pull_request:
+  # push: [main]
   workflow_dispatch:
 
 jobs:
@@ -11,13 +10,12 @@ jobs:
     name: Luarocks upload (SCM)
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: LuaRocks Upload
         uses: nvim-neorocks/luarocks-tag-release@v7
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
         with:
-          license: GPLv3
           version: scm
           summary: Show diagnostics that are not visible in current view
           # detailed_description: |

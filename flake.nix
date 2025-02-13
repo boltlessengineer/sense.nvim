@@ -51,6 +51,7 @@
           inherit
             (pkgs)
             docgen
+            neovim-test-drive
             ;
         };
         # packages = rec {
@@ -80,8 +81,8 @@
         checks = {
           inherit
             (pkgs)
-            integration-stable
-            integration-nightly
+            neovim-stable-test
+            neovim-nightly-test
             ;
         };
       };

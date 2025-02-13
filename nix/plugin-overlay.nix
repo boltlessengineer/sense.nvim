@@ -17,13 +17,47 @@
         ];
       }) {};
   };
-  sense-nvim-dev = final.neovimUtils.buildNeovimPlugin {
-    luaAttr = final.lua51Packages.sense-nvim;
-  };
-in {
   lua5_1 = prev.lua5_1.override {
     packageOverrides = luaPackages-override;
   };
   lua51Packages = prev.lua51Packages // final.lua5_1.pkgs;
-  inherit sense-nvim-dev;
+
+  sense-nvim-dev = final.neovimUtils.buildNeovimPlugin {
+    luaAttr = final.lua51Packages.sense-nvim;
+  };
+in {
+  inherit
+    lua5_1
+    lua51Packages
+    sense-nvim-dev
+    ;
+  vimPlugins = prev.vimPlugins // {
+    sense-nvim = sense-nvim-dev;
+  };
+  neovim-test-drive = let
+    neovimConfig = final.neovimUtils.makeNeovimConfig {
+      viAlias = false;
+      vimAlias = false;
+      plugins = [
+        final.vimPlugins.sense-nvim
+      ];
+    };
+  in (final.wrapNeovimUnstable final.neovim-nightly (neovimConfig // {
+    luaRcContent = /* lua */ ''
+      vim.o.number = true
+      vim.o.relativenumber = true
+      vim.lsp.config("gopls", {
+        cmd = { "gopls" },
+        root_markers = { ".git" },
+        filetypes = { "go" },
+      })
+      vim.lsp.enable("gopls")
+    '';
+  }))
+    .overrideAttrs (oa: {
+      nativeBuildInputs = oa.nativeBuildInputs ++ [
+        final.luajit.pkgs.wrapLua
+        final.gopls
+      ];
+    });
 }

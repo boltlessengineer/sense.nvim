@@ -13,10 +13,7 @@
           with ps; [
             nvim-nio
           ];
-        extraPackages = [
-          go
-          gopls
-        ];
+        extraPackages = [];
 
         preCheck = ''
           # Neovim expects to be able to create log files, etc.
@@ -36,8 +33,8 @@
     '';
   };
 in {
-  # test with neovim v0.10.2 instead
-  integration-stable = mkNeorocksTest "integration-stable" final.neovim;
-  integration-nightly = mkNeorocksTest "integration-nightly" final.neovim-nightly;
+  # TODO: test with neovim v0.10.2 instead
+  neovim-stable-test = mkNeorocksTest "neovim-stable-test" final.neovim;
+  neovim-nightly-test = mkNeorocksTest "neovim-nightly-test" final.neovim-nightly;
   inherit docgen;
 }

@@ -24,6 +24,10 @@ function M.get_diags_above(wininfo)
 end
 
 function M.get_diags_below(wininfo)
+    if wininfo.botline - wininfo.topline + 1 < wininfo.height then
+        log.debug("buffer bottom is visible in current window, return empty diagnostics")
+        return {}
+    end
     local diagnostics = state.diag_cache[wininfo.bufnr] or {}
     diagnostics = vim.iter(diagnostics)
         :filter(function(diag)

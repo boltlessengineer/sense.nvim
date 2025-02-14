@@ -118,3 +118,49 @@ describe("UI component - statuscol", function()
         assert.same(1, #testutils.list_visible_wins())
     end)
 end)
+
+-- TODO: move out of here and automate it.
+local ONELINE_DIAGS = {
+    {
+        bufnr = 1,
+        col = 0,
+        end_col = 0,
+        end_lnum = 1,
+        lnum = 1,
+        message = "expected ';', found 'EOF'",
+        namespace = 16,
+        severity = 1,
+        source = "syntax",
+        user_data = {
+            lsp = {
+                message = "expected ';', found 'EOF'",
+                range = {
+                    ["end"] = {
+                        character = 0,
+                        line = 1
+                    },
+                    start = {
+                        character = 0,
+                        line = 1
+                    }
+                },
+                severity = 1,
+                source = "syntax"
+            }
+        }
+    }
+}
+
+describe("samples/oneline.go", function()
+    before_each(function()
+        -- clear all buffers/windows
+        vim.cmd("silent! %bwipeout")
+        vim.cmd("silent! wincmd o")
+    end)
+    it("when buffer height is smaller than window height", function()
+        -- open new buffer and set diagnostics
+        testutils.open_file("spec/samples/oneline.go")
+        vim.diagnostic.set(TEST_NS, 0, ONELINE_DIAGS)
+        assert.same(0, #testutils.list_visible_float_wins())
+    end)
+end)

@@ -78,9 +78,13 @@ local function gen_statuscol_ui(name, calc_pos, render_fn)
                 self:close(wininfo)
                 return
             end
+            local win_pos = calc_pos(wininfo, #lines)
+            if win_pos.width < 1 then
+                self:close(wininfo)
+                return
+            end
             local _win, buf = (function ()
                 local win = vim.w[wininfo.winid][var_name]
-                local win_pos = calc_pos(wininfo, #lines)
                 local buf
                 if win and vim.api.nvim_win_is_valid(win) then
                     vim.api.nvim_win_set_config(win, win_pos)

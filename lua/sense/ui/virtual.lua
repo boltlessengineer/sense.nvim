@@ -16,7 +16,7 @@ local function render_top(wininfo)
     local closest = diagnostics[1]
     local cursor_row = vim.api.nvim_win_get_cursor(wininfo.winid)[1]
     local distance = cursor_row - (closest.lnum + 1)
-    local line = ("↑ %d lines above"):format(distance)
+    local line = (" ↑ %d lines above"):format(distance)
     local msg = vim.split(closest.message, "[\n\r]")[1]
     line = line .. " [" .. msg .. "]"
     local hl_group = "SenseVirtualText" .. utils.severity_to_text(closest.severity)
@@ -39,7 +39,7 @@ local function render_bot(wininfo)
     local closest = diagnostics[1]
     local cursor_row = vim.api.nvim_win_get_cursor(wininfo.winid)[1]
     local distance = (closest.lnum + 1) - cursor_row
-    local line = ("↓ %d lines below"):format(distance)
+    local line = (" ↓ %d lines below"):format(distance)
     local msg = vim.split(closest.message, "[\n\r]")[1]
     line = line .. " [" .. msg .. "]"
     local hl_group = "SenseVirtualText" .. utils.severity_to_text(closest.severity)

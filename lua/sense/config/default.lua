@@ -8,41 +8,21 @@
 
 ---@class sense.Config
 local default_config = {
-    ---@type table<string, sense.Opts.Indicator>
-    indicators = {
-        -- general settings
-        ["*"] = {
-            level = vim.diagnostic.severity.WARN,
-            max_count = 1,
-            win_config = {
-                zindex = 10,
-            }
-        },
+    ---@class sense.Config.Presets
+    presets = {
+        ---@class sense.Config.Presets.VirtualText
         virtualtext = {
+            ---@type boolean
             enabled = true,
-            -- options used from builtin renderer
+            ---@type integer
             max_count = 1,
-            win_config = {
-                variables = {
-                    winblend = 80,
-                    winhighlight = "",
-                },
-            },
         },
+        ---@class sense.Config.Presets.StatusColumn
         statuscolumn = {
+            ---@type boolean
             enabled = true,
-            render_top = function (wininfo)
-                if vim.wo[wininfo.winid].statuscolumn ~= "" then
-                    return {}, {}
-                end
-                return require("sense.ui.statuscol").render_top(wininfo)
-            end,
-            render_bot = function (wininfo)
-                if vim.wo[wininfo.winid].statuscolumn ~= "" then
-                    return {}, {}
-                end
-                return require("sense.ui.statuscol").render_bot(wininfo)
-            end,
+            ---@type integer
+            max_count = 1,
         },
     },
     _log_level = vim.log.levels.WARN,

@@ -1,5 +1,6 @@
 local log = require("sense.log")
 local utils = require("sense.utils")
+local utf8 = require("lua-utf8")
 
 local M = {}
 
@@ -77,6 +78,7 @@ function M.open_win_buf(win_config)
         zindex = 10,
     })
     local buf = vim.api.nvim_create_buf(false, true)
+    vim.bo[buf].buftype = "nofile"
     local win = M.nvim_open_win(buf, false, win_config)
     local winhighlight = table.concat({
         "NormalNC:LineNr",
@@ -84,6 +86,29 @@ function M.open_win_buf(win_config)
     vim.api.nvim_set_option_value("winhighlight", winhighlight, { win = win })
     log.debug("window opened")
     return win, buf
+end
+
+---@param str string
+---@param max_width integer
+---@return string, integer
+function M.truncate_line(str, max_width)
+    local full_width = vim.fn.strdisplaywidth(str)
+    if vim.fn.strdisplaywidth(str) <= max_width then
+        return str, full_width
+    end
+    max_width = max_width - 1
+    local result = {}
+    full_width = 0
+    for _, code in utf8.codes(str) do
+        local char = utf8.char(code)
+        local w = vim.fn.strdisplaywidth(char)
+        if full_width + w > max_width then
+            break
+        end
+        table.insert(result, char)
+        full_width = full_width + w
+    end
+    return table.concat(result) .. "…", full_width + 1
 end
 
 return M

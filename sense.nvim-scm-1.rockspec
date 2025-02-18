@@ -4,6 +4,10 @@ rockspec_format = "3.0"
 package = "sense.nvim"
 version = _MODREV .. _SPECREV
 
+dependencies = {
+    "luautf8",
+}
+
 test_dependencies = {
     "lua >= 5.1",
     "nlua",

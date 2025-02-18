@@ -11,7 +11,7 @@
         neovim = nvim;
         luaPackages = ps:
           with ps; [
-            nvim-nio
+            luautf8
           ];
         extraPackages = [];
 

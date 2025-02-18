@@ -21,6 +21,8 @@ jobs:
         with:
           summary: Show diagnostics that are not visible in current view
           # detailed_description: |
+          dependencies: |
+            luautf8
           test_dependencies: |
             nlua
           copy_directories: |

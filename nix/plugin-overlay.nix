@@ -14,6 +14,7 @@
 
         disabled = luaOlder "5.1";
         propagatedBuildInputs = with luaself; [
+          luautf8
         ];
       }) {};
   };

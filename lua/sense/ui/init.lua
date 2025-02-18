@@ -1,46 +1,28 @@
-local config = require("sense.config")
 local log = require("sense.log")
-local statuscol = require("sense.ui.builtin.statuscol")
-local virtualtext = require("sense.ui.builtin.virtualtext")
--- local virtual = require("sense.ui.virtual")
+local state = require("sense.state")
 
-local M = {
-    ---@type sense.Indicator[]
-    indicators = {},
-    ---@type table<integer, sense.Indicator[]>
-    windows = {},
-}
-
-if config.presets.virtualtext.enabled then
-    table.insert(M.indicators, virtualtext.gen_virtualtext_top(virtualtext.render_diagnostic_top))
-    table.insert(M.indicators, virtualtext.gen_virtualtext_bot(virtualtext.render_diagnostic_bot))
-end
-if config.presets.statuscolumn.enabled then
-    table.insert(M.indicators, statuscol.gen_statuscol_top(statuscol.render_diagnostic_top))
-    table.insert(M.indicators, statuscol.gen_statuscol_bot(statuscol.render_diagnostic_bot))
-end
+local M = {}
 
 function M.attach(winid)
-    M.windows[winid] = M.windows[winid] or {}
-    if #M.windows[winid] > 0 then
+    if #state.windows[winid].indicators > 0 then
         return
     end
-    for _, i in ipairs(M.indicators) do
-        table.insert(M.windows[winid], i:new(winid))
+    for _, i in ipairs(state.indicators) do
+        table.insert(state.windows[winid].indicators, i:new(winid))
     end
-    log.debug("attached to window:", M.windows)
+    log.debug("attached to window:", state.windows)
 end
 
 function M.detach(winid)
-    for _, i in ipairs(M.windows[winid]) do
+    for _, i in ipairs(state.windows[winid].indicators) do
         i:destroy()
     end
-    M.windows[winid] = nil
+    state.windows[winid] = nil
 end
 
 function M.render(wininfo)
     M.attach(wininfo.winid)
-    for _, c in ipairs(M.windows[wininfo.winid]) do
+    for _, c in ipairs(state.windows[wininfo.winid].indicators) do
         c:render(wininfo)
     end
 end

@@ -1,10 +1,7 @@
 ---@module 'luassert'
 
-require("spec.minimal_init")
-local testutils = require("spec.testutils")
-
 vim.g.sense_nvim = {
-    indicators = {
+    presets = {
         virtualtext = {
             enabled = false,
         },
@@ -13,6 +10,9 @@ vim.g.sense_nvim = {
         },
     },
 }
+
+require("spec.minimal_init")
+local testutils = require("spec.testutils")
 
 local TEST_NS = vim.api.nvim_create_namespace("sense.test")
 local diags = {
@@ -48,7 +48,7 @@ describe("UI component - statuscol", function()
         vim.cmd("silent! wincmd o")
 
         -- open new buffer and set diagnostics
-        testutils.open_file("spec/example.go")
+        testutils.open_file("spec/samples/error_at_top.go")
         vim.diagnostic.set(TEST_NS, 0, diags)
     end)
     it("assert vim window size", function()
@@ -63,6 +63,7 @@ describe("UI component - statuscol", function()
         testutils.emulate_missing_events("WinScrolled", {
             match = vim.api.nvim_get_current_win(),
         })
+        assert.same(1, #testutils.list_visible_float_wins())
         assert.same(2, #testutils.list_visible_wins())
     end)
     it("split windows should work separately", function()

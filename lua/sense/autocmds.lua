@@ -81,6 +81,7 @@ function M.setup()
             ui().render(info)
         end,
     })
+    -- TODO: properly detach UIs
 end
 
 return M

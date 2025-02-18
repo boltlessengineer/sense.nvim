@@ -49,7 +49,7 @@ describe("UI component - virtual", function()
         vim.cmd("silent! wincmd o")
 
         -- open new buffer and set diagnostics
-        testutils.open_file("spec/example.go")
+        testutils.open_file("spec/samples/error_at_top.go")
         vim.diagnostic.set(TEST_NS, 0, diags)
     end)
     it("assert vim window size", function()

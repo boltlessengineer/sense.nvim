@@ -1,27 +1,69 @@
-local hlutils = require("sense.utils.hlutils")
-
 local M = {}
 
-local function fill_bg(name)
-    local hl = hlutils.read_hl(0, { name = name, link = false })
-    assert(hl)
-    assert(hl.fg)
-    if not hl.bg then
-        hl.bg = hlutils.tint(hl.fg, -0.8)
+local function dec_to_rgb(num)
+    return {
+        r = bit.rshift(num, 16),
+        g = bit.band(bit.rshift(num, 8), 0xFF),
+        b = bit.band(num, 0xFF),
+    }
+end
+
+local function rgb_to_dec(rgb)
+    return bit.lshift(rgb.r, 16) + bit.lshift(rgb.g, 8) + rgb.b
+end
+
+---@param ns_id integer
+---@param opts vim.api.keyset.get_highlight
+local function read_hl(ns_id, opts)
+    opts.link = false
+    local hl = vim.api.nvim_get_hl(ns_id, opts)
+    local rich_hl = {}
+    if vim.tbl_isempty(hl) then
+        return
     end
-    return hl
+    rich_hl.fg = hl.fg and dec_to_rgb(hl.fg)
+    rich_hl.bg = hl.bg and dec_to_rgb(hl.bg)
+    return rich_hl
+end
+
+---@param c table A hex color
+---@param percent number a negative number darkens and a positive one brightens
+local function tint(c, percent)
+    if not c.r or not c.g or not c.b then
+        return "NONE"
+    end
+    local blend = function(component)
+        component = math.floor(component * (1 + percent))
+        return math.min(math.max(component, 0), 255)
+    end
+    return {
+        r = blend(c.r),
+        g = blend(c.g),
+        b = blend(c.b),
+    }
+end
+
+local function set(name, from)
+    local hl = read_hl(0, { name = from, link = false })
+    if hl and hl.fg and not hl.bg then
+        hl.bg = rgb_to_dec(tint(hl.fg, -0.8))
+        hl.fg = hl.fg and rgb_to_dec(hl.fg)
+    else
+        hl = { link = from }
+    end
+    vim.api.nvim_set_hl(0, name, hl)
 end
 
 function M.setup()
     -- generate hl-groups based on existing colors
-    hlutils.set_hl("SenseVirtualTextError", fill_bg("DiagnosticVirtualTextError"))
-    hlutils.set_hl("SenseVirtualTextWarn", fill_bg("DiagnosticVirtualTextWarn"))
-    hlutils.set_hl("SenseVirtualTextInfo", fill_bg("DiagnosticVirtualTextInfo"))
-    hlutils.set_hl("SenseVirtualTextHint", fill_bg("DiagnosticVirtualTextHint"))
-    hlutils.set_hl("SenseStatusColError", fill_bg("DiagnosticVirtualTextError"))
-    hlutils.set_hl("SenseStatusColWarn", fill_bg("DiagnosticVirtualTextWarn"))
-    hlutils.set_hl("SenseStatusColInfo", fill_bg("DiagnosticVirtualTextInfo"))
-    hlutils.set_hl("SenseStatusColHint", fill_bg("DiagnosticVirtualTextHint"))
+    set("SenseVirtualTextError", "DiagnosticVirtualTextError")
+    set("SenseVirtualTextWarn", "DiagnosticVirtualTextWarn")
+    set("SenseVirtualTextInfo", "DiagnosticVirtualTextInfo")
+    set("SenseVirtualTextHint", "DiagnosticVirtualTextHint")
+    set("SenseStatusColError", "DiagnosticVirtualTextError")
+    set("SenseStatusColWarn", "DiagnosticVirtualTextWarn")
+    set("SenseStatusColInfo", "DiagnosticVirtualTextInfo")
+    set("SenseStatusColHint", "DiagnosticVirtualTextHint")
 end
 
 return M

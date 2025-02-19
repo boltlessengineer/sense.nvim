@@ -11,7 +11,7 @@ vim.g.sense_nvim = {
         statuscolumn = {
             enabled = false,
         },
-    }
+    },
 }
 
 local TEST_NS = vim.api.nvim_create_namespace("sense.test")
@@ -43,7 +43,7 @@ describe("UI component - virtual", function()
         },
     }
 
-    before_each(function ()
+    before_each(function()
         -- clear all buffers/windows
         vim.cmd("silent! %bwipeout")
         vim.cmd("silent! wincmd o")

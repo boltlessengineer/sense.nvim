@@ -1,5 +1,3 @@
-local M = {}
-
 local function dec_to_rgb(num)
     return {
         r = bit.rshift(num, 16),
@@ -54,7 +52,7 @@ local function set(name, from)
     vim.api.nvim_set_hl(0, name, hl)
 end
 
-function M.setup()
+local function setup()
     -- generate hl-groups based on existing colors
     set("SenseVirtualTextError", "DiagnosticVirtualTextError")
     set("SenseVirtualTextWarn", "DiagnosticVirtualTextWarn")
@@ -65,5 +63,10 @@ function M.setup()
     set("SenseStatusColInfo", "DiagnosticVirtualTextInfo")
     set("SenseStatusColHint", "DiagnosticVirtualTextHint")
 end
-
-return M
+setup()
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("sense.highlights", { clear = true }),
+    callback = function()
+        setup()
+    end
+})

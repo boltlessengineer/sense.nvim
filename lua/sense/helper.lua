@@ -1,56 +1,48 @@
-local log = require("sense.log")
-local state = require("sense.state")
-
 local M = {}
 
 ---@param wininfo vim.fn.getwininfo.ret.item
----@return vim.Diagnostic[], vim.Diagnostic?
-function M.get_diags_above(wininfo)
-    local ds = state.diag_cache[wininfo.bufnr] or {}
-    log.debug("helper.get_diags_above")
-    local edge_item
-    ds = vim.iter(ds)
-        :filter(function(diag)
-            if diag.end_lnum + 1 == wininfo.topline then
-                edge_item = diag
+---@return sense.helper.DiagnosticScreenInfo screen
+function M.capture_diagnostics(wininfo)
+    local diags = vim.diagnostic.get(wininfo.bufnr)
+    local diags_above = {}
+    local diags_below = {}
+    ---@type vim.Diagnostic?, vim.Diagnostic?
+    local diag_top_edge_item, diag_bot_edge_item
+    local is_bottom_visible = wininfo.botline - wininfo.topline + 1 < wininfo.height
+    for _, diag in ipairs(diags) do
+        if diag.lnum + 1 == wininfo.topline then
+            diag_top_edge_item = diag
+        end
+        if diag.end_lnum + 1 < wininfo.topline then
+            table.insert(diags_above, diag)
+        end
+        if not is_bottom_visible then
+            if diag.lnum + 1 == wininfo.botline then
+                diag_bot_edge_item = diag
+            elseif diag.lnum + 1 > wininfo.botline then
+                table.insert(diags_below, diag)
             end
-            return diag.end_lnum + 1 < wininfo.topline
-        end)
-        :totable()
-    -- sort in reverse order (closer comes first)
-    table.sort(ds, function(a, b)
+        end
+    end
+    -- sort in reverse order (closest comes first)
+    table.sort(diags_above, function(a, b)
         if a.lnum == b.lnum then
             return a.col > b.col
         end
         return a.lnum > b.lnum
     end)
-    return ds, edge_item
-end
-
----@param wininfo vim.fn.getwininfo.ret.item
----@return vim.Diagnostic[], vim.Diagnostic?
-function M.get_diags_below(wininfo)
-    if wininfo.botline - wininfo.topline + 1 < wininfo.height then
-        log.debug("buffer bottom is visible in current window, return empty diagnostics")
-        return {}
-    end
-    local diagnostics = state.diag_cache[wininfo.bufnr] or {}
-    local edge_item
-    diagnostics = vim.iter(diagnostics)
-        :filter(function(diag)
-            if diag.lnum + 1 == wininfo.botline then
-                edge_item = diag
-            end
-            return diag.lnum + 1 > wininfo.botline
-        end)
-        :totable()
-    table.sort(diagnostics, function(a, b)
+    table.sort(diags_below, function(a, b)
         if a.lnum == b.lnum then
             return a.col < b.col
         end
         return a.lnum < b.lnum
     end)
-    return diagnostics, edge_item
+    return {
+        above = diags_above,
+        top_edge = diag_top_edge_item,
+        bot_edge = diag_bot_edge_item,
+        below = diags_below,
+    }
 end
 
 return M

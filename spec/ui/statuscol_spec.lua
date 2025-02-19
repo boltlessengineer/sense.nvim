@@ -138,18 +138,18 @@ local ONELINE_DIAGS = {
                 range = {
                     ["end"] = {
                         character = 0,
-                        line = 1
+                        line = 1,
                     },
                     start = {
                         character = 0,
-                        line = 1
-                    }
+                        line = 1,
+                    },
                 },
                 severity = 1,
-                source = "syntax"
-            }
-        }
-    }
+                source = "syntax",
+            },
+        },
+    },
 }
 
 describe("samples/oneline.go", function()

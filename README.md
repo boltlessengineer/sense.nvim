@@ -35,4 +35,4 @@ test drive plugin with nix:
 nix run .#neovim-drive
 ```
 
-[1]: https://lazy.folke.io/configuration
+[^1]: https://lazy.folke.io/configuration

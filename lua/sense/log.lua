@@ -1,6 +1,6 @@
 local M = {}
 
-local logger_level = vim.log.levels.DEBUG
+local logger_level = vim.tbl_get(vim.g, "sense_nvim", "_log_level") or vim.log.levels.WARN
 
 local LOG_DATE_FORMAT = "%F %H:%M:%S"
 local DEFAULT_LOG_PATH = vim.fn.stdpath("log") --[[@as string]]
@@ -47,13 +47,10 @@ local function open_logfile()
 end
 
 function M.debug(...)
-    if logger_level == vim.log.levels.OFF or not open_logfile() then
+    if vim.log.levels.DEBUG < logger_level or logger_level == vim.log.levels.OFF or not open_logfile() then
         return false
     end
     local argc = select("#", ...)
-    if vim.log.levels.DEBUG < logger_level then
-        return false
-    end
     if argc == 0 then
         return true
     end

@@ -19,14 +19,15 @@ local config
 ---@tag vim.g.sense_nvim
 ---@tag g:sense_nvim
 ---@class sense.Opts
+---Preset components config
 ---@field presets? sense.Opts.Presets
 
----Preset components config
 ---@class sense.Opts.Presets
+---Config for diagnostic virtualtest component
 ---@field virtualtext? sense.Opts.Presets.VirtualText
+---Config for diagnotics statuscolumn component
 ---@field statuscolumn? sense.Opts.Presets.StatusColumn
 
----Config for diagnostic virtualtest component
 ---@class sense.Opts.Presets.VirtualText
 ---Enable diagnostic virtualtext component
 ---@field enabled boolean
@@ -35,7 +36,6 @@ local config
 ---the window it is attached to.
 ---@field max_width number
 
----Config for diagnotics statuscolumn component
 ---@class sense.Opts.Presets.StatusColumn
 ---Enable diagnostic statuscolumn component
 ---@field enabeld boolean

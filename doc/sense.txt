@@ -25,7 +25,34 @@ sense.nvim configuration                                          *sense.config*
 <
 
 
+                                                              *vim.g.sense_nvim*
+                                                                  *g:sense_nvim*
 sense.Opts                                                          *sense.Opts*
+
+    Fields: ~
+        {presets?}  (sense.Opts.Presets)  Preset components config
+
+
+sense.Opts.Presets                                          *sense.Opts.Presets*
+
+    Fields: ~
+        {virtualtext?}   (sense.Opts.Presets.VirtualText)   Config for diagnostic virtualtest component
+        {statuscolumn?}  (sense.Opts.Presets.StatusColumn)  Config for diagnotics statuscolumn component
+
+
+sense.Opts.Presets.VirtualText                  *sense.Opts.Presets.VirtualText*
+
+    Fields: ~
+        {enabled}    (boolean)  Enable diagnostic virtualtext component
+        {max_width}  (number)   Max width of virtualtext component.
+                                Setting this to lower than 1 will be treated as ratio of max width based on
+                                the window it is attached to.
+
+
+sense.Opts.Presets.StatusColumn                *sense.Opts.Presets.StatusColumn*
+
+    Fields: ~
+        {enabeld}  (boolean)  Enable diagnostic statuscolumn component
 
 
 vim:tw=78:ts=8:noet:ft=help:norl:

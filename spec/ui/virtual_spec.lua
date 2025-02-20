@@ -4,7 +4,7 @@ require("spec.minimal_init")
 local testutils = require("spec.testutils")
 
 vim.g.sense_nvim = {
-    indicators = {
+    presets = {
         virtualtext = {
             enabled = true,
         },

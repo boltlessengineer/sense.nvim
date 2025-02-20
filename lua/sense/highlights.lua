@@ -68,5 +68,5 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     group = vim.api.nvim_create_augroup("sense.highlights", { clear = true }),
     callback = function()
         setup()
-    end
+    end,
 })

@@ -1,4 +1,6 @@
-if vim.g.loaded_sense_nvim then return end
+if vim.g.loaded_sense_nvim then
+    return
+end
 
 local api = require("sense.api")
 local config = require("sense.config")

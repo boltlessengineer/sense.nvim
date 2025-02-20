@@ -20,12 +20,12 @@ M.DiagnosticVirtualText = ui.virtualtext.create({
             callback = function(ev)
                 log.debug("re-render itself on diagnostic changed event")
                 vim.iter(vim.fn.getwininfo())
-                :filter(function(info)
-                    return info.bufnr == ev.buf
-                end)
-                :map(function(info)
-                    self:render(info)
-                end)
+                    :filter(function(info)
+                        return info.bufnr == ev.buf
+                    end)
+                    :map(function(info)
+                        self:render(info)
+                    end)
             end,
         })
     end,
@@ -103,10 +103,9 @@ M.DiagnosticStatusCol = ui.statuscol.create({
             pattern = { "foldcolumn", "number", "relativenumber", "signcolumn" },
             callback = function(_ev)
                 log.debug("re-render itself on diagnostic changed event")
-                vim.iter(vim.fn.getwininfo())
-                    :map(function(info)
-                        self:render(info)
-                    end)
+                vim.iter(vim.fn.getwininfo()):map(function(info)
+                    self:render(info)
+                end)
             end,
         })
     end,
@@ -122,7 +121,9 @@ M.DiagnosticStatusCol = ui.statuscol.create({
             local cursor_row = vim.api.nvim_win_get_cursor(wininfo.winid)[1]
             local distance = cursor_row - (closest.lnum + 1)
             local prefix, rnu_text = " ↑", tostring(distance) .. " "
-            local line = prefix .. string.rep(" ", wininfo.textoff - vim.fn.strdisplaywidth(prefix .. rnu_text)) .. rnu_text
+            local line = prefix
+                .. string.rep(" ", wininfo.textoff - vim.fn.strdisplaywidth(prefix .. rnu_text))
+                .. rnu_text
             local hl_group = "SenseStatusCol" .. severity_to_text(closest.severity)
             local highlight = {
                 hl_group = hl_group,
@@ -142,7 +143,9 @@ M.DiagnosticStatusCol = ui.statuscol.create({
             local cursor_row = vim.api.nvim_win_get_cursor(wininfo.winid)[1]
             local distance = (closest.lnum + 1) - cursor_row
             local prefix, rnu_text = " ↓", tostring(distance) .. " "
-            local line = prefix .. string.rep(" ", wininfo.textoff - vim.fn.strdisplaywidth(prefix .. rnu_text)) .. rnu_text
+            local line = prefix
+                .. string.rep(" ", wininfo.textoff - vim.fn.strdisplaywidth(prefix .. rnu_text))
+                .. rnu_text
             local hl_group = "SenseStatusCol" .. severity_to_text(closest.severity)
             local highlight = {
                 hl_group = hl_group,

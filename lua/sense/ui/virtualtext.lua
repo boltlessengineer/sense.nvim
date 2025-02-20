@@ -47,21 +47,15 @@ function M.create(opts)
                 end)
                 :totable()
             log().debug("lines", lines)
-            utils().restore_and_open_win(
-                top_varname,
-                wininfo,
-                lines,
-                highlights,
-                {
-                    relative = "win",
-                    win = wininfo.winid,
-                    anchor = "NE",
-                    row = 0,
-                    col = wininfo.width,
-                    width = width,
-                    height = #lines,
-                }
-            )
+            utils().restore_and_open_win(top_varname, wininfo, lines, highlights, {
+                relative = "win",
+                win = wininfo.winid,
+                anchor = "NE",
+                row = 0,
+                col = wininfo.width,
+                width = width,
+                height = #lines,
+            })
         end
         do
             local lines, highlights = data.below.lines, data.below.highlights
@@ -74,21 +68,15 @@ function M.create(opts)
                 end)
                 :totable()
             log().debug("lines", lines)
-            utils().restore_and_open_win(
-                bot_varname,
-                wininfo,
-                lines,
-                highlights,
-                {
-                    relative = "win",
-                    win = wininfo.winid,
-                    anchor = "SE",
-                    row = wininfo.height,
-                    col = wininfo.width,
-                    width = width,
-                    height = #lines,
-                }
-            )
+            utils().restore_and_open_win(bot_varname, wininfo, lines, highlights, {
+                relative = "win",
+                win = wininfo.winid,
+                anchor = "SE",
+                row = wininfo.height,
+                col = wininfo.width,
+                width = width,
+                height = #lines,
+            })
         end
     end
     return VirtualText

@@ -39,39 +39,27 @@ function M.create(opts)
         data.below = data.below or { lines = {}, highlights = {} }
         do
             local lines, highlights = data.above.lines, data.above.highlights
-            utils().restore_and_open_win(
-                top_varname,
-                wininfo,
-                lines,
-                highlights,
-                {
-                    relative = "win",
-                    win = wininfo.winid,
-                    anchor = "NW",
-                    row = 0,
-                    col = 0,
-                    width = width,
-                    height = #lines,
-                }
-            )
+            utils().restore_and_open_win(top_varname, wininfo, lines, highlights, {
+                relative = "win",
+                win = wininfo.winid,
+                anchor = "NW",
+                row = 0,
+                col = 0,
+                width = width,
+                height = #lines,
+            })
         end
         do
             local lines, highlights = data.below.lines, data.below.highlights
-            utils().restore_and_open_win(
-                bot_varname,
-                wininfo,
-                lines,
-                highlights,
-                {
-                    relative = "win",
-                    win = wininfo.winid,
-                    anchor = "SW",
-                    row = wininfo.height,
-                    col = 0,
-                    width = width,
-                    height = #lines,
-                }
-            )
+            utils().restore_and_open_win(bot_varname, wininfo, lines, highlights, {
+                relative = "win",
+                win = wininfo.winid,
+                anchor = "SW",
+                row = wininfo.height,
+                col = 0,
+                width = width,
+                height = #lines,
+            })
         end
     end
     return StatusCol

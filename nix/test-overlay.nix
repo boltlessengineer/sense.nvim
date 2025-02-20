@@ -77,5 +77,5 @@ in {
   # TODO: test with neovim v0.10.2 instead
   neovim-stable-test = mkNeorocksTest "neovim-stable-test" final.neovim;
   neovim-nightly-test = mkNeorocksTest "neovim-nightly-test" final.neovim-nightly;
-  inherit docgen;
+  inherit docgen sync-readme;
 }

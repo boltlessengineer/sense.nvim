@@ -1,11 +1,11 @@
----@mod sense.ui.statuscol Builtin VirtualText UI element
+---@mod sense.ui.virtualtext Builtin VirtualText UI element
 
 -- stylua: ignore start
 local function log() return require("sense.log") end
 local function utils() return require("sense.utils") end
 -- stylua: ignore end
 
-local M = {}
+local virtualtext = {}
 
 ---@class sense.ui.virtualtext.create.Opts
 ---Unique name used to save & restore UI state on each windows
@@ -19,7 +19,7 @@ local M = {}
 
 ---@param opts sense.ui.virtualtext.create.Opts
 ---@return sense.Indicator
-function M.create(opts)
+function virtualtext.create(opts)
     opts.max_width = opts.max_width or 0.5
     local top_varname = ("__sense_%s_top_virtualtext_winid"):format(opts.name)
     local bot_varname = ("__sense_%s_bot_virtualtext_winid"):format(opts.name)
@@ -82,4 +82,4 @@ function M.create(opts)
     return VirtualText
 end
 
-return M
+return virtualtext

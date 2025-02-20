@@ -43,16 +43,16 @@ sense.Opts.Presets                                          *sense.Opts.Presets*
 sense.Opts.Presets.VirtualText                  *sense.Opts.Presets.VirtualText*
 
     Fields: ~
-        {enabled}    (boolean)  Enable diagnostic virtualtext component
+        {enabled}    (boolean)  Enable diagnostic virtualtext component (Default: true)
         {max_width}  (number)   Max width of virtualtext component.
                                 Setting this to lower than 1 will be treated as ratio of max width based on
-                                the window it is attached to.
+                                the window it is attached to. (Default: 0.5)
 
 
 sense.Opts.Presets.StatusColumn                *sense.Opts.Presets.StatusColumn*
 
     Fields: ~
-        {enabeld}  (boolean)  Enable diagnostic statuscolumn component
+        {enabled}  (boolean)  Enable diagnostic statuscolumn component (Default: true)
 
 
 vim:tw=78:ts=8:noet:ft=help:norl:

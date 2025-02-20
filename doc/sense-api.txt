@@ -42,7 +42,7 @@ sense.ui.statuscol.create.Opts                  *sense.ui.statuscol.create.Opts*
         {render_lines}  (fun(wininfo:vim.fn.getwininfo.ret.item):sense.ui.TopBotLines)  Abstracted version of Indicator:render()
 
 
-M.create({opts})                                                      *M.create*
+statuscol.create({opts})                                      *statuscol.create*
 
     Parameters: ~
         {opts}  (sense.ui.statuscol.create.Opts)
@@ -52,7 +52,7 @@ M.create({opts})                                                      *M.create*
 
 
 ==============================================================================
-Builtin VirtualText UI element                              *sense.ui.statuscol*
+Builtin VirtualText UI element                            *sense.ui.virtualtext*
 
 sense.ui.virtualtext.create.Opts              *sense.ui.virtualtext.create.Opts*
 

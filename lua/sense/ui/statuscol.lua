@@ -4,7 +4,7 @@
 local function utils() return require("sense.utils") end
 -- stylua: ignore end
 
-local M = {}
+local statuscol = {}
 
 ---@class sense.ui.statuscol.create.Opts
 ---Unique name used to save & restore UI state on each windows
@@ -16,7 +16,7 @@ local M = {}
 
 ---@param opts sense.ui.statuscol.create.Opts
 ---@return sense.Indicator
-function M.create(opts)
+function statuscol.create(opts)
     local top_varname = ("__sense_%s_top_statuscol_winid"):format(opts.name)
     local bot_varname = ("__sense_%s_bot_statuscol_winid"):format(opts.name)
     local StatusCol = {}
@@ -65,4 +65,4 @@ function M.create(opts)
     return StatusCol
 end
 
-return M
+return statuscol

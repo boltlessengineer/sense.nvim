@@ -1,0 +1,96 @@
+==============================================================================
+Public api to control sense.nvim UI components                       *sense.api*
+
+
+The Lua API for sense.nvim
+Intended for use by third-party modules that extend its functionalities.
+
+
+M.register_renderer({renderer})                            *M.register_renderer*
+    Register Indicator
+    This method will call Indicator:init() immediately.
+
+    Parameters: ~
+        {renderer}  (sense.Indicator)
+
+
+sense.api.redraw.Opts                                    *sense.api.redraw.Opts*
+    winid can be used instead of wininfo.
+    When wininfo exists, winid will be ignored.
+
+    Fields: ~
+        {winid?}    (integer)
+        {wininfo?}  (vim.fn.getwininfo.ret.item)
+
+
+M.redraw({opts?})                                                     *M.redraw*
+    Redraw indicators.
+    When opts is not given, it will redraw indicators for every existing windows.
+
+    Parameters: ~
+        {opts?}  (sense.api.redraw.Opts)
+
+
+==============================================================================
+Builtin StatusColumn UI element                             *sense.ui.statuscol*
+
+sense.ui.statuscol.create.Opts                  *sense.ui.statuscol.create.Opts*
+
+    Fields: ~
+        {name}          (string)                                                        Unique name used to save & restore UI state on each windows
+        {on_init?}      (fun(self:sense.Indicator))                                     Called on Indicator:init()
+        {render_lines}  (fun(wininfo:vim.fn.getwininfo.ret.item):sense.ui.TopBotLines)  Abstracted version of Indicator:render()
+
+
+M.create({opts})                                                      *M.create*
+
+    Parameters: ~
+        {opts}  (sense.ui.statuscol.create.Opts)
+
+    Returns: ~
+        (sense.Indicator)
+
+
+==============================================================================
+Builtin VirtualText UI element                              *sense.ui.statuscol*
+
+sense.ui.virtualtext.create.Opts              *sense.ui.virtualtext.create.Opts*
+
+    Fields: ~
+        {name}          (string)                                                        Unique name used to save & restore UI state on each windows
+        {on_init?}      (fun(self:sense.Indicator))                                     Called on Indicator:init()
+        {render_lines}  (fun(wininfo:vim.fn.getwininfo.ret.item):sense.ui.TopBotLines)  Abstracted version of Indicator:render()
+
+
+M.create({opts})                                                      *M.create*
+
+    Parameters: ~
+        {opts}  (sense.ui.virtualtext.create.Opts)
+
+    Returns: ~
+        (sense.Indicator)
+
+
+==============================================================================
+useful functions to build custom UI components                    *sense.helper*
+
+sense.helper.DiagnosticScreenInfo            *sense.helper.DiagnosticScreenInfo*
+    Captured diagnostics for current window view.
+
+    Fields: ~
+        {above}      (vim.Diagnostic[])  diagnostics above the window. Ordered by distance
+        {below}      (vim.Diagnostic[])  diagnostics below the window. Ordered by distance
+        {top_edge?}  (vim.Diagnostic)    diagnostic on the top-edge line in current window
+        {bot_edge?}  (vim.Diagnostic)    diagnostic on the bottom-edge line in current window
+
+
+M.capture_diagnostics({wininfo})                         *M.capture_diagnostics*
+
+    Parameters: ~
+        {wininfo}  (vim.fn.getwininfo.ret.item)
+
+    Returns: ~
+        (sense.helper.DiagnosticScreenInfo)  screen
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:

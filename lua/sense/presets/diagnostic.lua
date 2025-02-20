@@ -5,8 +5,11 @@ local ui = require("sense.ui")
 
 local M = {}
 
+---@param severity vim.diagnostic.Severity
+---@return string
 local function severity_to_text(severity)
-    return string.lower(vim.diagnostic.severity[severity]):gsub("^%l", string.upper)
+    local str = string.lower(vim.diagnostic.severity[severity]):gsub("^%l", string.upper)
+    return str
 end
 
 M.DiagnosticVirtualText = ui.virtualtext.create({
@@ -77,6 +80,7 @@ M.DiagnosticVirtualText = ui.virtualtext.create({
     end,
     max_width = config.presets.virtualtext.max_width,
 })
+
 M.DiagnosticStatusCol = ui.statuscol.create({
     name = "diagnostic",
     on_init = function(self)

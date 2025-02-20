@@ -28,8 +28,49 @@
     ];
     text = ''
       mkdir -p doc
-      echo "todo"
-      # vimcats lua/sense/init.lua > doc/sense.txt
+      vimcats lua/sense/{init,config/init}.lua > doc/sense.txt
+      vimcats lua/sense/{api,ui/*,helper,_meta}.lua > doc/sense-api.txt
+    '';
+  };
+  sync-readme = final.writeShellApplication {
+    name = "sync-readme";
+    text = /* bash */ ''
+      set -e
+
+      default=lua/sense/config/default.lua
+
+      # Create a temporary file for the copied snippet
+      snippet=$(mktemp)
+      echo "1. Extract the config snippet from $default"
+      sed -n '/default-config:start/,/default-config:end/ {
+        /default-config:start/d
+        /default-config:end/d
+        p
+      }' "$default" > "$snippet"
+
+      echo '2. Build new README content'
+      # Create a temporary file for the updated README.
+      tmpfile=$(mktemp)
+
+      echo '2-1. Print all lines up to the starting marker'
+      sed '/default-config:start/q' README.md > "$tmpfile"
+
+      echo '2-2. Append the new code block'
+      {
+        echo '```lua'
+        cat "$snippet"
+        echo '```'
+      } >> "$tmpfile"
+
+      echo '2-3. Append the rest of the README starting from the ending marker'
+      sed -n '/default-config:end/,$p' README.md >> "$tmpfile"
+
+      echo '3. Replace the old README with the new version'
+      mv "$tmpfile" README.md
+
+      rm "$snippet"
+
+      echo "README.md updated successfully."
     '';
   };
 in {

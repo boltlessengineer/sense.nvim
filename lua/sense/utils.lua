@@ -7,7 +7,7 @@ local M = {}
 ---@param name string
 ---@param wininfo vim.fn.getwininfo.ret.item
 ---@param lines string[]
----@param highlights sense.UI.Highlight[]
+---@param highlights sense.ui.Highlight[]
 ---@param win_opts vim.api.keyset.win_config
 function M.restore_and_open_win(name, wininfo, lines, highlights, win_opts)
     local ok, fwinid = pcall(vim.tbl_get, vim.w, wininfo.winid, name)
@@ -39,7 +39,7 @@ end
 ---Render lines & highlights on buffer
 ---@param buf number
 ---@param lines string[]
----@param highlights sense.UI.Highlight[]
+---@param highlights sense.ui.Highlight[]
 function M.set_lines(buf, lines, highlights)
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
     for _, highlight in ipairs(highlights) do

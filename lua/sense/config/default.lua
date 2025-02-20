@@ -1,3 +1,4 @@
+---@comment default-config:start
 ---@class sense.Config
 local default_config = {
     ---@class sense.Config.Presets
@@ -17,5 +18,6 @@ local default_config = {
     },
     _log_level = vim.log.levels.WARN,
 }
+---@comment default-config:end
 
 return default_config

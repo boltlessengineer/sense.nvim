@@ -1,0 +1,31 @@
+==============================================================================
+sense.nvim                                                               *sense*
+
+
+ Extensible UI for Neovim to indicate context outside the visible area.
+
+
+==============================================================================
+Table of Contents                                               *sense-contents*
+
+sense.nvim ····························································· |sense|
+sense.nvim configuration ········································ |sense.config|
+
+==============================================================================
+sense.nvim configuration                                          *sense.config*
+
+
+ sense.nvim configuration options
+
+ You can set sense.nvim configuration options via `vim.g.sense_nvim`.
+
+>lua
+ ---@type sense.Opts
+ vim.g.sense_nvim
+<
+
+
+sense.Opts                                                          *sense.Opts*
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:

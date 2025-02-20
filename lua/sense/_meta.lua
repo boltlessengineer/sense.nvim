@@ -1,11 +1,16 @@
 ---@meta
 error("Cannot require a meta file")
 
----@class sense.UI.Highlight
+---@class sense.ui.Highlight
 ---@field hl_group string
 ---@field line integer
 ---@field col_start integer
 ---@field col_end integer
+
+---Object containing data to render on top & bottom UI components
+---@class sense.ui.TopBotLines
+---@field above? { lines: string[], highlights: sense.ui.Highlight[] }
+---@field below? { lines: string[], highlights: sense.ui.Highlight[] }
 
 ---@class sense.Indicator
 local Indicator = {}
@@ -19,14 +24,3 @@ function Indicator:init() end
 function Indicator:render(wininfo)
     wininfo = wininfo -- placeholder
 end
-
----Captured diagnostics for current window view.
----@class sense.helper.DiagnosticScreenInfo
----diagnostics above the window. Ordered by distance
----@field above vim.Diagnostic[]
----diagnostics below the window. Ordered by distance
----@field below vim.Diagnostic[]
----diagnostic on the top-edge line in current window
----@field top_edge? vim.Diagnostic
----diagnostic on the bottom-edge line in current window
----@field bot_edge? vim.Diagnostic

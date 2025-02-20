@@ -1,6 +1,9 @@
+---@mod sense.ui.statuscol Builtin StatusColumn UI element
+
 -- stylua: ignore start
 local function utils() return require("sense.utils") end
 -- stylua: ignore end
+
 local M = {}
 
 ---@class sense.ui.statuscol.create.Opts
@@ -12,6 +15,7 @@ local M = {}
 ---@field render_lines fun(wininfo: vim.fn.getwininfo.ret.item): sense.ui.TopBotLines?
 
 ---@param opts sense.ui.statuscol.create.Opts
+---@return sense.Indicator
 function M.create(opts)
     local top_varname = ("__sense_%s_top_statuscol_winid"):format(opts.name)
     local bot_varname = ("__sense_%s_bot_statuscol_winid"):format(opts.name)

@@ -1,7 +1,10 @@
+---@mod sense.ui.statuscol Builtin VirtualText UI element
+
 -- stylua: ignore start
 local function log() return require("sense.log") end
 local function utils() return require("sense.utils") end
 -- stylua: ignore end
+
 local M = {}
 
 ---@class sense.ui.virtualtext.create.Opts
@@ -15,6 +18,7 @@ local M = {}
 ---@field max_width? number
 
 ---@param opts sense.ui.virtualtext.create.Opts
+---@return sense.Indicator
 function M.create(opts)
     opts.max_width = opts.max_width or 0.5
     local top_varname = ("__sense_%s_top_virtualtext_winid"):format(opts.name)

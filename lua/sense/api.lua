@@ -1,3 +1,12 @@
+---@mod sense.api Public api to control sense.nvim UI components
+---
+---@brief [[
+---
+---The Lua API for sense.nvim
+---Intended for use by third-party modules that extend its functionalities.
+---
+---@brief ]]
+
 local M = {}
 
 ---@private

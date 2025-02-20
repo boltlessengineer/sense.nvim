@@ -16,7 +16,29 @@
 ---@type sense.Config
 local config
 
+---@tag vim.g.sense_nvim
+---@tag g:sense_nvim
 ---@class sense.Opts
+---@field presets? sense.Opts.Presets
+
+---Preset components config
+---@class sense.Opts.Presets
+---@field virtualtext? sense.Opts.Presets.VirtualText
+---@field statuscolumn? sense.Opts.Presets.StatusColumn
+
+---Config for diagnostic virtualtest component
+---@class sense.Opts.Presets.VirtualText
+---Enable diagnostic virtualtext component
+---@field enabled boolean
+---Max width of virtualtext component.
+---Setting this to lower than 1 will be treated as ratio of max width based on
+---the window it is attached to.
+---@field max_width number
+
+---Config for diagnotics statuscolumn component
+---@class sense.Opts.Presets.StatusColumn
+---Enable diagnostic statuscolumn component
+---@field enabeld boolean
 
 ---@type sense.Opts
 vim.g.sense_nvim = vim.g.sense_nvim

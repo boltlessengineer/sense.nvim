@@ -20,7 +20,10 @@ jobs:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
         with:
           summary: Show diagnostics that are not visible in current view
-          # detailed_description: |
+          detailed_description: |
+            sense.nvim shows diagnostics that are not visible in current view with their distance.
+            Allows you to quickly navigate to off-screen diagnostics with relative-line-number motions.
+            Don't miss the diagnostics ever again!
           dependencies: |
             luautf8
           test_dependencies: |

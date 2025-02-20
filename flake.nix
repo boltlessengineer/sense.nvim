@@ -51,7 +51,7 @@
           inherit
             (pkgs)
             docgen
-            neovim-test-drive
+            neovim-with-sense
             ;
         };
 
@@ -66,7 +66,6 @@
             stylua
             docgen
             sync-readme
-            neovim-nightly
             (pkgs.lua5_1.withPackages (ps: with ps; [luarocks luacheck]))
           ];
         };

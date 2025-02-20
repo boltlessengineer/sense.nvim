@@ -35,7 +35,7 @@ in {
   vimPlugins = prev.vimPlugins // {
     sense-nvim = sense-nvim-dev;
   };
-  neovim-test-drive = let
+  neovim-with-sense = let
     neovimConfig = final.neovimUtils.makeNeovimConfig {
       viAlias = false;
       vimAlias = false;

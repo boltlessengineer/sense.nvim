@@ -4,7 +4,7 @@ sense.nvim shows diagnostics that are not visible in current view with their dis
 Allows you to quickly navigate to off-screen diagnostics with relative-line-number motions.\
 Don't miss the diagnostics ever again!
 
-<https://github.com/user-attachments/assets/25ee8ece-855a-41cb-8000-84e26613e849>
+https://github.com/user-attachments/assets/25ee8ece-855a-41cb-8000-84e26613e849
 
 ## Requirements
 

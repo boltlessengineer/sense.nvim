@@ -16,24 +16,26 @@ function M.restore_and_open_win(name, wininfo, lines, highlights, win_opts)
         log.debug("error while reading window variables in", wininfo.winid, fwinid)
         fwinid = nil
     end
-    if #lines == 0 then
-        log.debug("nothing to render, abort")
-        if fwinid and vim.api.nvim_win_is_valid(fwinid) then
-            log.debug("close window:", fwinid)
-            vim.api.nvim_win_close(fwinid, true)
+    M.ui_guard(function()
+        if #lines == 0 then
+            log.debug("nothing to render, abort")
+            if fwinid and vim.api.nvim_win_is_valid(fwinid) then
+                log.debug("close window:", fwinid)
+                vim.api.nvim_win_close(fwinid, true)
+            end
+            return
         end
-        return
-    end
-    local bufnr
-    assert(win_opts.width > 0, "width should be positive at this point")
-    if fwinid and vim.api.nvim_win_is_valid(fwinid) then
-        vim.api.nvim_win_set_config(fwinid, win_opts)
-        bufnr = vim.api.nvim_win_get_buf(fwinid)
-    else
-        fwinid, bufnr = M.open_win_buf(win_opts)
-        vim.w[wininfo.winid][name] = fwinid
-    end
-    M.set_lines(bufnr, lines, highlights)
+        local bufnr
+        assert(win_opts.width > 0, "width should be positive at this point")
+        if fwinid and vim.api.nvim_win_is_valid(fwinid) then
+            vim.api.nvim_win_set_config(fwinid, win_opts)
+            bufnr = vim.api.nvim_win_get_buf(fwinid)
+        else
+            fwinid, bufnr = M.open_win_buf(win_opts)
+            vim.w[wininfo.winid][name] = fwinid
+        end
+        M.set_lines(bufnr, lines, highlights)
+    end)
 end
 
 ---Render lines & highlights on buffer
@@ -135,6 +137,50 @@ function M.calc_size_config(size, base)
     else
         return math.floor(size)
     end
+end
+
+--- Suppress errors that may occur while render windows.
+---
+--- The E523 error (Not allowed here) happens when 'secure' operations
+--- (including buffer or window management) are invoked while textlock is held
+--- or the Neovim UI is blocking. See #68.
+---
+--- Also ignore E11 (Invalid in command-line window), which is thrown when
+--- Fidget tries to close the window while a command-line window is focused.
+--- See #136.
+---
+--- This utility provides a workaround to simply supress the error.
+--- All other errors will be re-thrown.
+---
+--- (Thanks @wookayin and @0xAdk!)
+--- NOTE(boltless): Copied from fidget.nvim
+---
+---@param callable fun()
+---@return boolean suppressed_error
+function M.ui_guard(callable)
+    local whitelist = {
+        "E11: Invalid in command%-line window",
+        "E523: Not allowed here",
+        "E565: Not allowed to change",
+    }
+
+    local ok, err = pcall(callable)
+    if ok then
+        return true
+    end
+
+    if type(err) ~= "string" then
+        -- Don't know how to deal with this kind of error object
+        error(err)
+    end
+
+    for _, msg in ipairs(whitelist) do
+        if string.find(err, msg) then
+            return false
+        end
+    end
+
+    error(err)
 end
 
 return M

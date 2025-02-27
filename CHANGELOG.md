@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/boltlessengineer/sense.nvim/compare/v1.0.0...v1.0.1) (2025-02-27)
+
+
+### Bug Fixes
+
+* add guard to UI updates that might fail on some situations (close [#4](https://github.com/boltlessengineer/sense.nvim/issues/4)) ([aaf07fd](https://github.com/boltlessengineer/sense.nvim/commit/aaf07fdcb9f13510fb35815a7a0dcb25318cc922))
+
 ## 1.0.0 (2025-02-20)
 
 
